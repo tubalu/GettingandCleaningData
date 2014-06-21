@@ -6,7 +6,7 @@ Getting and Cleaning Data
 
 * download file data file from url:
 https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
-* extract in any folder
+* extract in any folder:
 you will see "UCI HAR Dataset" in your folder
 * setwd("you extract folder/UCI HAR Dataset") to set your work folder
 

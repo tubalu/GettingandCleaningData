@@ -24,5 +24,5 @@ type below command rstudio or r commandline
     </tr>
 </table>
 
-the code will read the data files , and create a TinyData.txt
+the code will read the data files , and create a TidyData.txt
 

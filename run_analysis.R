@@ -9,29 +9,29 @@ readDataAndExtractData <- function(fileNameSuffix, filePath) {
     
     #read y_data
     fileName <- file.path(filePath, paste0("y_", fileNameSuffix, ".txt"))
-    y_data <- read.table(fileName, header=F, col.names=c("ActivityID"))
+    yData <- read.table(fileName, header=F, col.names=c("ActivityID"))
     
     #read subjects
     fileName <- file.path(filePath, paste0("subject_", fileNameSuffix, ".txt"))
-    subject_data <- read.table(fileName, header=F, col.names=c("SubjectID"))
+    subjectData <- read.table(fileName, header=F, col.names=c("SubjectID"))
     
     # read the column names
-    data_cols <- read.table("features.txt", header=F, as.is=T, col.names=c("MeasureID", "MeasureName"))
+    dataCololums <- read.table("features.txt", header=F, as.is=T, col.names=c("MeasureID", "MeasureName"))
     
     # read the x data file
     fileName <- file.path(filePath, paste0("X_", fileNameSuffix, ".txt"))
     print(paste("    Read the data file:" ,fileName) )
-    data <- read.table(fileName, header=F, col.names=data_cols$MeasureName)
+    data <- read.table(fileName, header=F, col.names=dataCololums$MeasureName)
     
     # column names needed for extract the subset
-    meanAndStdCols <- grep(".*mean\\(\\)|.*std\\(\\)", data_cols$MeasureName)
+    meanAndStdCols <- grep(".*mean\\(\\)|.*std\\(\\)", dataCololums$MeasureName)
     
     # subset the data (done early to save memory)
     data <- data[,meanAndStdCols]
     
     # append the activity id and subject id columns
-    data$ActivityID <- y_data$ActivityID
-    data$SubjectID <- subject_data$SubjectID
+    data$ActivityID <- yData$ActivityID
+    data$SubjectID <- subjectData$SubjectID
     
     # return the data
     data
@@ -47,10 +47,10 @@ readAndMergeData <- function() {
 # change some column name, make it more readable.
 applyAppropriatelyLabel<-function(data) {
     
-    cnames <- colnames(data)
-    cnames <- gsub("\\.+mean\\.+", cnames, replacement="Mean")
-    cnames <- gsub("\\.+std\\.+",  cnames, replacement="StandardDeviation")
-    colnames(data) <- cnames
+    columNames <- colnames(data)
+    columNames <- gsub("\\.+mean\\.+", columNames, replacement="Mean")
+    columNames <- gsub("\\.+std\\.+",  columNames, replacement="StandardDeviation")
+    colnames(data) <- columNames
     data
 }
 
@@ -58,22 +58,19 @@ applyAppropriatelyLabel<-function(data) {
 applyActivityLabel <- function(data) {
     actlabels <- read.table("activity_labels.txt", header=F, as.is=T, col.names=c("ActivityID", "ActivityName"))
     actlabels$ActivityName <- as.factor(actlabels$ActivityName)
-    dataWithLabel <- merge(data, actlabels)
-    dataWithLabel
+    merge(data, actlabels)
 }
 
 
 # Create a tidy data set that has the average of each variable for each activity and each subject.
 getTidyData <- function(data) {
-    library(reshape2)
-    
     # melt the dataset
-    id_vars = c("ActivityID", "ActivityName", "SubjectID")
-    measure_vars = setdiff(colnames(data), id_vars)
-    melted_data <- melt(data, id=id_vars, measure.vars=measure_vars)
+    ids = c("ActivityID", "ActivityName", "SubjectID")
+    measurements = setdiff(colnames(data), ids)
+    meltedData <- melt(data, id=ids, measure.vars=measurements)
     
     # recast 
-    dcast(melted_data, ActivityName + SubjectID ~ variable, mean)    
+    dcast(meltedData, ActivityName + SubjectID ~ variable, mean)    
 }
 
 # Create the tidy data set and save it on to the named file
@@ -82,15 +79,16 @@ SaveTidyDataToFile <- function(data,fileName) {
 }
 
 
-
+#load the library.
+library(reshape2)
 
 # this is where I put the data file
-#setwd("C:/R/UCI HAR Dataset")
+# setwd("C:/R/UCI HAR Dataset")
 
 ##  You should create one R script called run_analysis.R that does the following. 
 ##  1. Merges the training and the test sets to create one data set.
 ##  2. Extracts only the measurements on the mean and standard deviation for each measurement. 
-#extradcting is done while read the data.
+##     extradcting is done while read the data.
 print("1/2. read and merge data")
 data<-readAndMergeData()
 
